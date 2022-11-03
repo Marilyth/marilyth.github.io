@@ -43,32 +43,62 @@
         <p>And I make software</p>
     </div>
     <div style="top: 90%; position: absolute; text-align: center; width: 100%;">
-      <a href="https://github.com/Marilyth" class="fa fa-brands fa-github"></a>
-      <a href="https://www.linkedin.com/in/may-b%C3%A4r-218410248" class="fa fa-brands fa-linkedin"></a>
-      <a href="https://www.twitter.com/mayfunction" class="fa fa-brands fa-twitter"></a>
-      <a href="https://youtube.com/channel/UCEgH3yz61omqCpFnQN40-Xg" class="fa fa-circle fa-brands fa-youtube"></a>
-      <a href="mailto:baermay98@gmail.com" class="fa fa-envelope"></a>
+      <a href="https://github.com/Marilyth" onmouseover="typeText('I am Marilyth', 'nameTitle', 100);" class="fa fa-brands fa-github"></a>
+      <a href="https://www.linkedin.com/in/may-b%C3%A4r-218410248" onmouseover="typeText('I am May Bär', 'nameTitle', 100);" class="fa fa-brands fa-linkedin"></a>
+      <a href="https://www.twitter.com/mayfunction" onmouseover="typeText('I am Mayfunction', 'nameTitle', 100);" class="fa fa-brands fa-twitter"></a>
+      <a href="https://youtube.com/channel/UCEgH3yz61omqCpFnQN40-Xg" onmouseover="typeText('I am May', 'nameTitle', 100);" class="fa fa-brands fa-youtube"></a>
+      <a class="fa fa-brands fa-discord" onmouseover="typeText('I am May#2469', 'nameTitle', 100);"></a>
+      <a href="mailto:baermay98@gmail.com" class="fa fa-envelope" onmouseover="typeText('I am baermay98@gmail.com', 'nameTitle', 100);"></a>
     </div>
     
     <script>
+      var isWriting = false;
+      
       function typeText(goal, id, typeSpeed){
-        var text = "";
+        if(isWriting)
+          return;
+
+        isWriting = true;
         var element = document.getElementById(id);
         var cursorElement = document.getElementById(id + "Cursor");
-    
-        for(let i = 0; i < goal.length; i++){
+        var text = element.innerText;
+
+        // Determine how much text must be removed.
+        var startIndex = Math.min(text.length, goal.length);
+        for(var i = 0; i < Math.min(goal.length, text.length); i++){
+          if(text[i] != goal[i]){
+            startIndex = i;
+            break;
+          }
+        }
+        
+        var totalTimeDeleting = (typeSpeed / 2) * (text.length - startIndex);
+        var totalTimeAdding = typeSpeed * (goal.length - startIndex);
+
+        // Remove superfluous text.
+        for(let i = startIndex; i < text.length; i++){
+          setTimeout(() => {
+            text = text.slice(0, -1);
+            element.innerText = text;
+          }, (typeSpeed / 2) * (i - startIndex + 1));
+        }
+
+        // Write new text.
+        for(let i = startIndex; i < goal.length; i++){
           setTimeout(() => {
             text += goal[i];
-            element.innerHTML = text;
-            if(i == goal.length - 1){
-              setInterval(function() {
-                cursorElement.style.opacity = (cursorElement.style.opacity == 0 ? 1 : 0);
-              }, 1000);
-            }
-          }, typeSpeed * (i + 1));
+            element.innerText = text;
+          }, typeSpeed * (i - startIndex + 1) + totalTimeDeleting + typeSpeed);
         }
+        
+        var totalTimeTyping = totalTimeAdding + totalTimeDeleting + typeSpeed;
+        setTimeout(() => isWriting = false, totalTimeTyping);
       }
-    
+      
+      var cursorElement = document.getElementById("nameTitleCursor");
+      setInterval(function() {
+                    cursorElement.style.opacity = (cursorElement.style.opacity == 0 ? 1 : 0);
+                  }, 1000);
       typeText("I am May", "nameTitle", 150);
     </script>
   </body>
