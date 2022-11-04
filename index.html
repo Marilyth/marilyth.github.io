@@ -52,13 +52,16 @@
     </div>
     
     <script>
-      var isWriting = false;
+      var lastWriting = Date.now();
       
-      function typeText(goal, id, typeSpeed){
-        if(isWriting)
-          return;
+      function timeout(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
 
-        isWriting = true;
+      async function typeText(goal, id, typeSpeed){
+        var currentTime = Date.now();
+        lastWriting = currentTime;
+
         var element = document.getElementById(id);
         var cursorElement = document.getElementById(id + "Cursor");
         var text = element.innerText;
@@ -72,27 +75,28 @@
           }
         }
         
-        var totalTimeDeleting = (typeSpeed / 2) * (text.length - startIndex);
-        var totalTimeAdding = typeSpeed * (goal.length - startIndex);
-
         // Remove superfluous text.
-        for(let i = startIndex; i < text.length; i++){
-          setTimeout(() => {
-            text = text.slice(0, -1);
-            element.innerText = text;
-          }, (typeSpeed / 2) * (i - startIndex + 1));
+        var toDelete = text.length - startIndex;
+        for(var i = 0; i < toDelete; i++){
+          await timeout(typeSpeed / 2);
+
+          if(lastWriting > currentTime)
+            return;
+
+          text = text.slice(0, -1);
+          element.innerText = text;
         }
 
         // Write new text.
-        for(let i = startIndex; i < goal.length; i++){
-          setTimeout(() => {
-            text += goal[i];
-            element.innerText = text;
-          }, typeSpeed * (i - startIndex + 1) + totalTimeDeleting + typeSpeed);
+        for(var i = startIndex; i < goal.length; i++){
+          await timeout(typeSpeed);
+
+          if(lastWriting > currentTime)
+            return;
+
+          text += goal[i];
+          element.innerText = text;;
         }
-        
-        var totalTimeTyping = totalTimeAdding + totalTimeDeleting + typeSpeed;
-        setTimeout(() => isWriting = false, totalTimeTyping);
       }
       
       var cursorElement = document.getElementById("nameTitleCursor");
