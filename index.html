@@ -6,6 +6,8 @@
       body, html {
         height: 100%;
         margin: 0;
+        opacity: 1;
+        transition: opacity 1.0s;
         font-family: sans-serif;
         text-align: center;
       }
@@ -43,22 +45,28 @@
         <p style="font-size: max(1vmax, 16px);">And I make software</p>
     </div>
     <div style="top: 85%; position: absolute; text-align: center; width: 100%;">
-      <a href="https://github.com/Marilyth" onmouseover="typeText('I am Marilyth', 'nameTitle', 100);" class="fa fa-brands fa-github"></a>
-      <a href="https://www.linkedin.com/in/may-b%C3%A4r-218410248" onmouseover="typeText('I am May Bär', 'nameTitle', 100);" class="fa fa-brands fa-linkedin"></a>
-      <a href="https://www.twitter.com/mayfunction" onmouseover="typeText('I am Mayfunction', 'nameTitle', 100);" class="fa fa-brands fa-twitter"></a>
-      <a href="https://youtube.com/channel/UCEgH3yz61omqCpFnQN40-Xg" onmouseover="typeText('I am May', 'nameTitle', 100);" class="fa fa-brands fa-youtube"></a>
+      <a href="https://github.com/Marilyth" onclick="return transitionToPage('https://github.com/Marilyth')" onmouseover="typeText('I am Marilyth', 'nameTitle', 100);" class="fa fa-brands fa-github"></a>
+      <a href="https://www.linkedin.com/in/may-b%C3%A4r-218410248" onclick="return transitionToPage('https://www.linkedin.com/in/may-b%C3%A4r-218410248')" onmouseover="typeText('I am May Baer', 'nameTitle', 100);" class="fa fa-brands fa-linkedin"></a>
+      <a href="https://www.twitter.com/mayfunction" onclick="return transitionToPage('https://www.twitter.com/mayfunction')" onmouseover="typeText('I am Mayfunction', 'nameTitle', 100);" class="fa fa-brands fa-twitter"></a>
+      <a href="https://youtube.com/channel/UCEgH3yz61omqCpFnQN40-Xg" onclick="return transitionToPage('https://youtube.com/channel/UCEgH3yz61omqCpFnQN40-Xg')" onmouseover="typeText('I am May', 'nameTitle', 100);" class="fa fa-brands fa-youtube"></a>
       <a class="fa fa-brands fa-discord" onmouseover="typeText('I am May#2469', 'nameTitle', 100);"></a>
       <a href="mailto:may@mayiscoding.com" class="fa fa-envelope" onmouseover="typeText('I am may@mayiscoding.com', 'nameTitle', 100);"></a>
     </div>
     
     <script>
       var lastWriting = Date.now();
+      var isUserLeaving = false;
       
       function timeout(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
       }
 
-      async function typeText(goal, id, typeSpeed){
+      async function typeText(goal, id, typeSpeed, isLeaving = false){
+        if (isUserLeaving)
+          return;
+
+        isUserLeaving = isLeaving;
+
         var currentTime = Date.now();
         lastWriting = currentTime;
 
@@ -97,6 +105,19 @@
           text += goal[i];
           element.innerText = text;;
         }
+      }
+
+      function transitionToPage(href) {
+        setTimeout(async function() {
+          await typeText("Goodbye!", "nameTitle", 100, true);
+          document.querySelector('html').style.opacity = 0;
+          document.querySelector('body').style.opacity = 0;
+
+          await timeout(1500);
+          window.location.href = href;
+        }, 0);
+
+        return false;
       }
       
       var cursorElement = document.getElementById("nameTitleCursor");
